@@ -3,30 +3,57 @@ import { Upload, Play, FileText, Activity, Eye, Camera, AlertCircle, Loader2, Do
 import axios from 'axios'
 
 function App() {
-  const [appState, setAppState] = useState('idle') // idle, processing, completed
-  const [jobId, setJobId] = useState(null)
-  const [jobStatus, setJobStatus] = useState(null)
-  const [uploadStatus, setUploadStatus] = useState('')
+  // State Management
+  const [state, setState] = useState({
+    appState: 'idle', // idle, processing, completed, error
+    jobId: null,
+    status: null,
+    progress: 0,
+    totalCount: 0,
+    resultUrls: {
+      video: null,
+      report: null
+    },
+    uploadStatus: ''
+  })
+  
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef(null)
   const pollingIntervalRef = useRef(null)
 
   // Poll job status every 2 seconds when processing
   useEffect(() => {
-    if (appState === 'processing' && jobId) {
+    if (state.appState === 'processing' && state.jobId) {
       pollingIntervalRef.current = setInterval(async () => {
         try {
-          const response = await axios.get(`http://localhost:8000/status/${jobId}`)
-          setJobStatus(response.data)
+          const response = await axios.get(`http://localhost:8000/status/${state.jobId}`)
+          const jobData = response.data
           
-          if (response.data.status === 'completed') {
-            setAppState('completed')
+          setState(prev => ({
+            ...prev,
+            status: jobData,
+            progress: jobData.progress || 0,
+            totalCount: jobData.total_count || 0
+          }))
+          
+          if (jobData.status === 'completed') {
+            setState(prev => ({
+              ...prev,
+              appState: 'completed',
+              resultUrls: {
+                video: jobData.processed_video_url,
+                report: jobData.report_url
+              }
+            }))
             if (pollingIntervalRef.current) {
               clearInterval(pollingIntervalRef.current)
             }
-          } else if (response.data.status === 'failed') {
-            setAppState('idle')
-            setUploadStatus(`Processing failed: ${response.data.error}`)
+          } else if (jobData.status === 'failed') {
+            setState(prev => ({
+              ...prev,
+              appState: 'error',
+              uploadStatus: `Processing failed: ${jobData.error}`
+            }))
             if (pollingIntervalRef.current) {
               clearInterval(pollingIntervalRef.current)
             }
@@ -42,13 +69,16 @@ function App() {
         clearInterval(pollingIntervalRef.current)
       }
     }
-  }, [appState, jobId])
+  }, [state.appState, state.jobId])
 
   const handleFileSelect = async (file) => {
     if (!file) return
     
-    setUploadStatus('Uploading video...')
-    setAppState('processing')
+    setState(prev => ({
+      ...prev,
+      appState: 'processing',
+      uploadStatus: 'Uploading video...'
+    }))
     
     const formData = new FormData()
     formData.append('file', file)
@@ -60,11 +90,17 @@ function App() {
         }
       })
       
-      setJobId(response.data.job_id)
-      setUploadStatus('Video uploaded successfully. Processing started...')
+      setState(prev => ({
+        ...prev,
+        jobId: response.data.job_id,
+        uploadStatus: 'Video uploaded successfully. Processing started...'
+      }))
     } catch (error) {
-      setUploadStatus(`Upload failed: ${error.message}`)
-      setAppState('idle')
+      setState(prev => ({
+        ...prev,
+        appState: 'error',
+        uploadStatus: `Upload failed: ${error.message}`
+      }))
     }
   }
 
@@ -90,10 +126,18 @@ function App() {
   }
 
   const resetApp = () => {
-    setAppState('idle')
-    setJobId(null)
-    setJobStatus(null)
-    setUploadStatus('')
+    setState({
+      appState: 'idle',
+      jobId: null,
+      status: null,
+      progress: 0,
+      totalCount: 0,
+      resultUrls: {
+        video: null,
+        report: null
+      },
+      uploadStatus: ''
+    })
   }
 
   // Render different states
@@ -121,7 +165,7 @@ function App() {
     <div className="text-center py-8">
       <Loader2 className="h-16 w-16 mx-auto mb-6 text-cyan-400 animate-spin" />
       <h3 className="text-xl font-semibold text-white mb-2">Processing Video</h3>
-      <p className="text-slate-400 mb-4">Job ID: {jobId}</p>
+      <p className="text-slate-400 mb-4">Job ID: {state.jobId}</p>
       
       {/* Progress Circle */}
       <div className="relative w-32 h-32 mx-auto mb-6">
@@ -143,18 +187,18 @@ function App() {
             strokeWidth="8"
             fill="none"
             strokeDasharray={`${2 * Math.PI * 60}`}
-            strokeDashoffset={`${2 * Math.PI * 60 * (1 - (jobStatus?.progress || 0) / 100)}`}
+            strokeDashoffset={`${2 * Math.PI * 60 * (1 - (state.progress || 0) / 100)}`}
             className="text-cyan-400 transition-all duration-500"
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-white">{jobStatus?.progress || 0}%</span>
+          <span className="text-2xl font-bold text-white">{state.progress || 0}%</span>
         </div>
       </div>
       
       {/* Live Vehicle Counter */}
       <div className="bg-slate-800 rounded-lg p-4 max-w-sm mx-auto">
-        <div className="text-3xl font-bold text-cyan-400">{jobStatus?.total_count || 0}</div>
+        <div className="text-3xl font-bold text-cyan-400">{state.totalCount || 0}</div>
         <div className="text-sm text-slate-400">Vehicles Counted</div>
       </div>
     </div>
@@ -165,7 +209,7 @@ function App() {
       {/* Final Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-slate-800 rounded-lg p-4">
-          <div className="text-2xl font-bold text-cyan-400">{jobStatus?.total_count || 0}</div>
+          <div className="text-2xl font-bold text-cyan-400">{state.totalCount || 0}</div>
           <div className="text-sm text-slate-400">Total Vehicles</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
@@ -173,13 +217,13 @@ function App() {
           <div className="text-sm text-slate-400">Processing Complete</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
-          <div className="text-2xl font-bold text-blue-400">{jobId}</div>
+          <div className="text-2xl font-bold text-blue-400">{state.jobId}</div>
           <div className="text-sm text-slate-400">Job ID</div>
         </div>
       </div>
 
       {/* Video Player */}
-      {jobStatus?.processed_video_url && (
+      {state.resultUrls?.video && (
         <div className="bg-slate-800 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Play className="h-5 w-5 mr-2 text-cyan-400" />
@@ -188,7 +232,7 @@ function App() {
           <video
             controls
             className="w-full rounded-lg"
-            src={jobStatus.processed_video_url}
+            src={state.resultUrls.video}
           >
             Your browser does not support the video tag.
           </video>
@@ -196,11 +240,15 @@ function App() {
       )}
 
       {/* Download Report Button */}
-      {jobStatus?.report_url && (
-        <button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center">
+      {state.resultUrls?.report && (
+        <a
+          href={state.resultUrls.report}
+          download
+          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center"
+        >
           <Download className="h-5 w-5 mr-2" />
           Download CSV Report
-        </button>
+        </a>
       )}
     </div>
   )
@@ -217,7 +265,7 @@ function App() {
             </div>
             <div className="flex items-center space-x-2 text-sm text-slate-400">
               <Activity className="h-4 w-4" />
-              <span className="capitalize">{appState}</span>
+              <span className="capitalize">{state.appState}</span>
             </div>
           </div>
         </div>
@@ -232,14 +280,14 @@ function App() {
             <div className="bg-slate-900 rounded-lg border border-slate-800 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white flex items-center">
-                  {appState === 'idle' && <Upload className="h-5 w-5 mr-2 text-cyan-400" />}
-                  {appState === 'processing' && <Loader2 className="h-5 w-5 mr-2 text-cyan-400 animate-spin" />}
-                  {appState === 'completed' && <Eye className="h-5 w-5 mr-2 text-cyan-400" />}
-                  {appState === 'idle' && 'Video Upload'}
-                  {appState === 'processing' && 'Processing Video'}
-                  {appState === 'completed' && 'Analysis Results'}
+                  {state.appState === 'idle' && <Upload className="h-5 w-5 mr-2 text-cyan-400" />}
+                  {state.appState === 'processing' && <Loader2 className="h-5 w-5 mr-2 text-cyan-400 animate-spin" />}
+                  {state.appState === 'completed' && <Eye className="h-5 w-5 mr-2 text-cyan-400" />}
+                  {state.appState === 'idle' && 'Video Upload'}
+                  {state.appState === 'processing' && 'Processing Video'}
+                  {state.appState === 'completed' && 'Analysis Results'}
                 </h2>
-                {appState !== 'idle' && (
+                {state.appState !== 'idle' && (
                   <button
                     onClick={resetApp}
                     className="text-sm text-slate-400 hover:text-white transition-colors"
@@ -250,14 +298,14 @@ function App() {
               </div>
               
               {/* State-specific content */}
-              {appState === 'idle' && renderIdleState()}
-              {appState === 'processing' && renderProcessingState()}
-              {appState === 'completed' && renderCompletedState()}
+              {state.appState === 'idle' && renderIdleState()}
+              {state.appState === 'processing' && renderProcessingState()}
+              {state.appState === 'completed' && renderCompletedState()}
               
-              {uploadStatus && appState === 'idle' && (
+              {state.uploadStatus && state.appState === 'idle' && (
                 <div className="mt-4 p-3 bg-slate-800 rounded-md flex items-center">
                   <AlertCircle className="h-4 w-4 mr-2 text-cyan-400" />
-                  <span className="text-sm text-slate-300">{uploadStatus}</span>
+                  <span className="text-sm text-slate-300">{state.uploadStatus}</span>
                 </div>
               )}
             </div>
@@ -276,17 +324,17 @@ function App() {
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">State</span>
                   <span className={`text-sm capitalize ${
-                    appState === 'idle' ? 'text-slate-500' :
-                    appState === 'processing' ? 'text-yellow-400' :
+                    state.appState === 'idle' ? 'text-slate-500' :
+                    state.appState === 'processing' ? 'text-yellow-400' :
                     'text-green-400'
                   }`}>
-                    {appState}
+                    {state.appState}
                   </span>
                 </div>
-                {jobId && (
+                {state.jobId && (
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Job ID</span>
-                    <span className="text-cyan-400 text-sm">{jobId}</span>
+                    <span className="text-cyan-400 text-sm">{state.jobId}</span>
                   </div>
                 )}
               </div>
@@ -296,9 +344,9 @@ function App() {
             <div className="bg-slate-900 rounded-lg border border-slate-800 p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                {jobStatus?.report_url && (
+                {state.resultUrls?.report && (
                   <a
-                    href={jobStatus.report_url}
+                    href={state.resultUrls.report}
                     download
                     className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors flex items-center justify-center"
                   >
