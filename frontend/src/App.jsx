@@ -207,7 +207,7 @@ function App() {
   const renderCompletedState = () => (
     <div>
       {/* Final Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-2xl font-bold text-cyan-400">{state.totalCount || 0}</div>
           <div className="text-sm text-slate-400">Total Vehicles</div>
@@ -219,6 +219,22 @@ function App() {
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-2xl font-bold text-blue-400">{state.jobId}</div>
           <div className="text-sm text-slate-400">Job ID</div>
+        </div>
+      </div>
+
+      {/* Vehicle Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-slate-800 rounded-lg p-4">
+          <div className="text-xl font-semibold text-white mb-2">Cars</div>
+          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.car || 0}</div>
+        </div>
+        <div className="bg-slate-800 rounded-lg p-4">
+          <div className="text-xl font-semibold text-white mb-2">Trucks</div>
+          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.truck || 0}</div>
+        </div>
+        <div className="bg-slate-800 rounded-lg p-4">
+          <div className="text-xl font-semibold text-white mb-2">Buses</div>
+          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.bus || 0}</div>
         </div>
       </div>
 
