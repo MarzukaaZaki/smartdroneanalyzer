@@ -57,6 +57,30 @@ Once both servers are running:
 - Frontend: http://localhost:5173 *(or as shown in terminal)*
 - Backend API: http://127.0.0.1:8000
 
+## 🎯 Interface Overview
+
+### 🏠 Landing Page
+Initial interface for uploading and starting the processing pipeline:
+
+![Landing Page](./assets/Landing%20page.png)
+
+---
+
+## 📸 Demo / Output
+
+### 🟡 Processing State
+Real-time progress tracking with live vehicle count:
+
+![Processing State](./assets/video1_progress.png)
+
+---
+
+### 🟢 Final Output
+Processed video with vehicle detection and counting overlay:
+
+![Processed Output](./assets/video1_processed.png)
+
+
 ## System Architecture
 
 The application follows a **decoupled full-stack architecture** to ensure a responsive UI during computationally heavy video processing.
