@@ -163,7 +163,7 @@ function App() {
 
   const renderProcessingState = () => (
     <div className="text-center py-8">
-      <Loader2 className="h-16 w-16 mx-auto mb-6 text-cyan-400 animate-spin" />
+      <Loader2 className="h-16 w-16 mx-auto mb-6 text-[#8a3a6c] animate-spin" />
       <h3 className="text-xl font-semibold text-white mb-2">Processing Video</h3>
       
       {/* Progress Circle */}
@@ -187,7 +187,7 @@ function App() {
             fill="none"
             strokeDasharray={`${2 * Math.PI * 60}`}
             strokeDashoffset={`${2 * Math.PI * 60 * (1 - (state.progress || 0) / 100)}`}
-            className="text-cyan-400 transition-all duration-500"
+            className="text-[#8a3a6c] transition-all duration-500"
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
@@ -197,7 +197,7 @@ function App() {
       
       {/* Live Vehicle Counter */}
       <div className="bg-slate-800 rounded-lg p-4 max-w-sm mx-auto">
-        <div className="text-3xl font-bold text-cyan-400">{state.totalCount || 0}</div>
+        <div className="text-6xl font-bold text-[#8a3a6c] mb-2">{state.totalCount || 0}</div>
         <div className="text-sm text-slate-400">Vehicles Counted</div>
       </div>
     </div>
@@ -208,7 +208,7 @@ function App() {
       {/* Final Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-slate-800 rounded-lg p-4">
-          <div className="text-2xl font-bold text-cyan-400">{state.totalCount || 0}</div>
+          <div className="text-2xl font-bold text-[#8a3a6c]">{state.totalCount || 0}</div>
           <div className="text-sm text-slate-400">Total Vehicles</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
@@ -225,15 +225,15 @@ function App() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-xl font-semibold text-white mb-2">Cars</div>
-          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.car || 0}</div>
+          <div className="text-2xl font-bold text-[#8a3a6c]">{state.status?.type_counts?.car || 0}</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-xl font-semibold text-white mb-2">Trucks</div>
-          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.truck || 0}</div>
+          <div className="text-2xl font-bold text-[#8a3a6c]">{state.status?.type_counts?.truck || 0}</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-xl font-semibold text-white mb-2">Buses</div>
-          <div className="text-2xl font-bold text-cyan-400">{state.status?.type_counts?.bus || 0}</div>
+          <div className="text-2xl font-bold text-[#8a3a6c]">{state.status?.type_counts?.bus || 0}</div>
         </div>
       </div>
 
@@ -241,7 +241,7 @@ function App() {
       {state.resultUrls?.video && (
         <div className="bg-slate-800 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Play className="h-5 w-5 mr-2 text-cyan-400" />
+            <Play className="h-5 w-5 mr-2 text-[#8a3a6c]" />
             Processed Video
           </h3>
           <video
@@ -259,7 +259,7 @@ function App() {
         <a
           href={state.resultUrls.report}
           download
-          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center"
+          className="w-full bg-[#8a3a6c] hover:bg-[#a04d85] text-white px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center"
         >
           <Download className="h-5 w-5 mr-2" />
           Download CSV Report
@@ -275,11 +275,11 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <Camera className="h-8 w-8 text-cyan-400" />
-              <h1 className="text-xl font-bold text-white">Traffic Surveillance System</h1>
+              <img src='/logo.png' className="h-8 w-8 rounded-full bg-white p-1" alt="ANTS Group Logo" />
+              <h1 className="text-xl font-bold text-white">ANTS BD | Smart Traffic Analyzer</h1>
             </div>
             <div className="flex items-center space-x-2 text-sm text-slate-400">
-              <Activity className="h-4 w-4" />
+              <Activity className="h-4 w-4 text-[#8a3a6c]" />
               <span className="capitalize">{state.appState}</span>
             </div>
           </div>
@@ -295,9 +295,9 @@ function App() {
             <div className="bg-slate-900 rounded-lg border border-slate-800 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white flex items-center">
-                  {state.appState === 'idle' && <Upload className="h-5 w-5 mr-2 text-cyan-400" />}
-                  {state.appState === 'processing' && <Loader2 className="h-5 w-5 mr-2 text-cyan-400 animate-spin" />}
-                  {state.appState === 'completed' && <Eye className="h-5 w-5 mr-2 text-cyan-400" />}
+                  {state.appState === 'idle' && <Upload className="h-5 w-5 mr-2 text-[#8a3a6c]" />}
+                  {state.appState === 'processing' && <Loader2 className="h-5 w-5 mr-2 text-[#8a3a6c] animate-spin" />}
+                  {state.appState === 'completed' && <Eye className="h-5 w-5 mr-2 text-[#8a3a6c]" />}
                   {state.appState === 'idle' && 'Video Upload'}
                   {state.appState === 'processing' && 'Processing Video'}
                   {state.appState === 'completed' && 'Analysis Results'}
@@ -319,7 +319,7 @@ function App() {
               
               {state.uploadStatus && state.appState === 'idle' && (
                 <div className="mt-4 p-3 bg-slate-800 rounded-md flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-2 text-cyan-400" />
+                  <AlertCircle className="h-4 w-4 mr-2 text-[#8a3a6c]" />
                   <span className="text-sm text-slate-300">{state.uploadStatus}</span>
                 </div>
               )}
@@ -349,7 +349,7 @@ function App() {
                 {state.jobId && (
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Job ID</span>
-                    <span className="text-cyan-400 text-sm">
+                    <span className="text-[#8a3a6c] text-sm">
                       {state.jobId.length > 12 ? `${state.jobId.slice(0, 4)}...${state.jobId.slice(-4)}` : state.jobId}
                     </span>
                   </div>
@@ -365,15 +365,15 @@ function App() {
                   <a
                     href={state.resultUrls.report}
                     download
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors flex items-center justify-center"
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors flex items-center justify-center border border-[#8a3a6c] hover:border-[#a04d85]"
                   >
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 mr-2 text-[#8a3a6c]" />
                     Download Report
                   </a>
                 )}
                 <button 
                   onClick={resetApp}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
+                  className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors border border-[#8a3a6c] hover:border-[#a04d85]"
                 >
                   Clear Results
                 </button>
@@ -382,6 +382,11 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="text-center py-8 text-slate-500 text-sm">
+        © 2026 ANTS Group Technical Assessment 
+      </footer>
     </div>
   )
 }
