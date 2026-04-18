@@ -165,7 +165,6 @@ function App() {
     <div className="text-center py-8">
       <Loader2 className="h-16 w-16 mx-auto mb-6 text-cyan-400 animate-spin" />
       <h3 className="text-xl font-semibold text-white mb-2">Processing Video</h3>
-      <p className="text-slate-400 mb-4">Job ID: {state.jobId}</p>
       
       {/* Progress Circle */}
       <div className="relative w-32 h-32 mx-auto mb-6">
@@ -207,7 +206,7 @@ function App() {
   const renderCompletedState = () => (
     <div>
       {/* Final Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-slate-800 rounded-lg p-4">
           <div className="text-2xl font-bold text-cyan-400">{state.totalCount || 0}</div>
           <div className="text-sm text-slate-400">Total Vehicles</div>
@@ -217,8 +216,8 @@ function App() {
           <div className="text-sm text-slate-400">Processing Complete</div>
         </div>
         <div className="bg-slate-800 rounded-lg p-4">
-          <div className="text-2xl font-bold text-blue-400">{state.jobId}</div>
-          <div className="text-sm text-slate-400">Job ID</div>
+          <div className="text-2xl font-bold text-blue-400">{state.status?.processing_duration ? `${state.status.processing_duration}s` : '0.0s'}</div>
+          <div className="text-sm text-slate-400">Analysis Time</div>
         </div>
       </div>
 
@@ -350,7 +349,9 @@ function App() {
                 {state.jobId && (
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Job ID</span>
-                    <span className="text-cyan-400 text-sm">{state.jobId}</span>
+                    <span className="text-cyan-400 text-sm">
+                      {state.jobId.length > 12 ? `${state.jobId.slice(0, 4)}...${state.jobId.slice(-4)}` : state.jobId}
+                    </span>
                   </div>
                 )}
               </div>
