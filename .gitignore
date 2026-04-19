@@ -83,3 +83,11 @@ coverage.xml
 *.temp
 temp/
 tmp/
+
+*.mp4
+*.csv
+*.pt
+*.json
+backend/storage/
+dataset/
+venv/
