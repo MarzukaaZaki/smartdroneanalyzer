@@ -80,6 +80,8 @@ Processed video with vehicle detection and counting overlay:
 
 ![Processed Output](./assets/video1_processed.png)
 
+![Processed Output](./assets/video2_processed.png)
+
 
 ## System Architecture
 
@@ -261,6 +263,7 @@ curl "http://127.0.0.1:8000/download/report/abc-123" \
 ---
 
 ## Tracking Methodology & Edge Case Handling
+I utilized YOLOv8 for detection and ByteTrack for temporal tracking. YOLOv8 provides the best speed-to-accuracy ratio for real-time applications. I chose ByteTrack over alternatives like DeepSORT because ByteTrack is "Re-ID free"—it recovers tracks by associating low-confidence detections rather than running an expensive separate re-identification model or discarding them, making it significantly more efficient for high-density drone footage.
 
 To address **double-counting and occlusions**, the system implements a custom  
 **Bidirectional Leading-Edge Counting Engine**.
